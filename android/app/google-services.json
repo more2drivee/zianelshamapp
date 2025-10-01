@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "317607212441",
+    "project_id": "zain-elsham-51fbb",
+    "storage_bucket": "zain-elsham-51fbb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317607212441:android:c4fb77f8ae6aa1e9318f08",
+        "android_client_info": {
+          "package_name": "com.zainelsham.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXQVE_J-WUwgqTRrK-l2TOrtya8bq666w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
