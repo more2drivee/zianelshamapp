@@ -6,8 +6,14 @@ import 'package:flutter_restaurant/utill/styles.dart';
 
 enum SnackBarStatus {error, success, alert, info}
 
-void showCustomSnackBarHelper(String? message, {
-  bool isError = true, bool isToast = false, SnackBarStatus? snackBarStatus}) {
+void showCustomSnackBarHelper(
+  String? message, {
+  bool isError = true,
+  bool isToast = false,
+  SnackBarStatus? snackBarStatus,
+  String? actionLabel,
+  VoidCallback? onAction,
+}) {
 
   final Size size = MediaQuery.of(Get.context!).size;
 
@@ -50,6 +56,17 @@ void showCustomSnackBarHelper(String? message, {
                 fontSize: Dimensions.fontSizeDefault,
               ),
             )),
+
+            if (onAction != null) ...[
+              const SizedBox(width: Dimensions.paddingSizeSmall),
+              TextButton(
+                onPressed: onAction,
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                ),
+                child: Text(actionLabel ?? 'View', style: rubikBold.copyWith(color: Colors.white)),
+              ),
+            ],
 
           ]),
         ),

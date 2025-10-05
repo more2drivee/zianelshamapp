@@ -20,7 +20,6 @@ import 'package:flutter_restaurant/utill/dimensions.dart';
 import 'package:flutter_restaurant/utill/images.dart';
 import 'package:flutter_restaurant/utill/styles.dart';
 import 'package:provider/provider.dart';
-
 import '../../../common/widgets/rating_bar_widget.dart';
 
 class ProductCardWidget extends StatelessWidget {
@@ -35,8 +34,8 @@ class ProductCardWidget extends StatelessWidget {
     super.key,
     required this.product,
     this.quantityPosition = QuantityPosition.left,
-    this.imageHeight = 180,
-    this.imageWidth = double.infinity,
+    this.imageHeight = 100,
+    this.imageWidth = 220,
     this.productGroup = ProductGroup.common,
     this.isShowBorder = false,
   });
@@ -47,15 +46,17 @@ class ProductCardWidget extends StatelessWidget {
     final productProvider = Provider.of<ProductProvider>(context, listen: false);
     final localizationProvider = Provider.of<LocalizationProvider>(context, listen: false);
 
-    final bool isDesktop = ResponsiveHelper.isDesktop(context);
+    final bool isLtr = localizationProvider.isLtr;
     double? startingPrice = product.price;
-    double? priceDiscount = PriceConverterHelper.convertDiscount(context, product.price, product.discount, product.discountType);
+    double? priceDiscount = PriceConverterHelper.convertDiscount(
+        context, product.price, product.discount, product.discountType);
     bool isAvailable = ProductHelper.isProductAvailable(product: product);
 
     return Consumer<CartProvider>(
       builder: (context, cartProvider, _) {
         int cartIndex = cartProvider.getCartIndex(product);
-        String productImage = '${splashProvider.baseUrls!.productImageUrl}/${product.image}';
+        String productImage =
+            '${splashProvider.baseUrls!.productImageUrl}/${product.image}';
 
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -73,60 +74,123 @@ class ProductCardWidget extends StatelessWidget {
             color: Theme.of(context).cardColor,
             clipBehavior: Clip.hardEdge,
             shape: RoundedRectangleBorder(
-              side: BorderSide(color: Theme.of(context).primaryColor.withOpacity(isShowBorder ? 0.2 : 0)),
+              side: BorderSide(
+                color: Theme.of(context)
+                    .primaryColor
+                    .withOpacity(isShowBorder ? 0.2 : 0),
+              ),
               borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
             ),
             child: InkWell(
-              onTap: () => ProductHelper.addToCart(cartIndex: cartIndex, product: product),
+              onTap: () => ProductHelper.addToCart(
+                  cartIndex: cartIndex, product: product),
               hoverColor: Theme.of(context).primaryColor.withOpacity(0.03),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // صورة المنتج
-                  Stack(
-                    children: [
-                      _ProductImageWidget(
-                        imageHeight: imageHeight,
-                        imageWidth: imageWidth,
-                        productImage: productImage,
-                        productGroup: productGroup,
-                      ),
-                      StockTagWidget(product: product, productGroup: productGroup),
-                      Positioned(
-                        right: localizationProvider.isLtr ? Dimensions.paddingSizeSmall : null,
-                        top: Dimensions.paddingSizeSmall,
-                        left: localizationProvider.isLtr ? null : Dimensions.paddingSizeSmall,
-                        child: WishButtonWidget(product: product),
-                      ),
-                      if (product.discount != null && product.discount != 0)
-                        Positioned(
-                          top: 12,
-                          left: 12,
-                          child: _DiscountTagWidget(product: product, productGroup: productGroup),
+              child: Directionality( // ✅ الاتجاه العام للكارت كله
+                textDirection: isLtr ? TextDirection.ltr : TextDirection.rtl,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    // الصورة + التفاصيل
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            _ProductImageWidget(
+                              imageHeight: imageHeight,
+                              imageWidth: imageWidth,
+                              productImage: productImage,
+                              productGroup: productGroup,
+                            ),
+                            StockTagWidget(
+                                product: product, productGroup: productGroup),
+                            Positioned(
+                              right: isLtr
+                                  ? Dimensions.paddingSizeSmall
+                                  : null,
+                              top: Dimensions.paddingSizeSmall,
+                              left: isLtr
+                                  ? null
+                                  : Dimensions.paddingSizeSmall,
+                              child: WishButtonWidget(product: product),
+                            ),
+                            if (product.discount != null && product.discount != 0)
+                              Positioned(
+                                top: 12,
+                                left: 12,
+                                child: _DiscountTagWidget(
+                                    product: product,
+                                    productGroup: productGroup),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
-
-                  // Spacer يخلي التفاصيل تنزل لتحت
-                  const Spacer(),
-
-                  // تفاصيل المنتج (الاسم + السعر)
-                  _ProductDescriptionWidget(
-                    product: product,
-                    priceDiscount: priceDiscount,
-                    startingPrice: startingPrice,
-                    productGroup: productGroup,
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // زرار Add to Cart تحت خالص
-                  if (productProvider.checkStock(product) && isAvailable)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      child: AddToCartButtonWidget(product: product),
+                        _ProductDescriptionWidget(
+                          product: product,
+                          priceDiscount: priceDiscount,
+                          startingPrice: startingPrice,
+                          productGroup: productGroup,
+                          isLtr: isLtr,
+                        ),
+                      ],
                     ),
-                ],
+
+                    const SizedBox(height: 6),
+
+              // ✅ صف السعر والبلص في الأسفل
+              Padding(
+                padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      child: Row(
+                        mainAxisAlignment:
+                            isLtr ? MainAxisAlignment.start : MainAxisAlignment.end,
+                        children: [
+                          if (productProvider.checkStock(product) && isAvailable)
+                            InkWell(
+                              onTap: () => ProductHelper.addToCart(
+                                  cartIndex: cartIndex, product: product),
+                              borderRadius: BorderRadius.circular(8),
+                              child: Container(
+                                height: 32,
+                                width: 32,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context)
+                                          .shadowColor
+                                          .withOpacity(0.15),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.add,
+                                    color: Colors.white, size: 20),
+                              ),
+                            ),
+                          const Spacer(),
+                          CustomDirectionalityWidget(
+                            child: Text(
+                              PriceConverterHelper.convertPrice(
+                                startingPrice,
+                                discount: product.discount,
+                                discountType: product.discountType,
+                              ),
+                              textAlign:
+                                  isLtr ? TextAlign.left : TextAlign.right, // ✅ السعر يمين بالعربية
+                              style: rubikBold.copyWith(
+                                  fontSize: Dimensions.fontSizeLarge),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -170,94 +234,77 @@ class _ProductDescriptionWidget extends StatelessWidget {
     required this.priceDiscount,
     required this.startingPrice,
     required this.productGroup,
+    required this.isLtr,
   });
 
   final Product product;
   final double? priceDiscount;
   final double? startingPrice;
   final ProductGroup productGroup;
+  final bool isLtr;
 
   @override
   Widget build(BuildContext context) {
     final isCenterAlign = productGroup == ProductGroup.chefRecommendation ||
         productGroup == ProductGroup.setMenu ||
         productGroup == ProductGroup.branchProduct ||
-        (productGroup == ProductGroup.frequentlyBought && !ResponsiveHelper.isDesktop(context));
+        (productGroup == ProductGroup.frequentlyBought &&
+            !ResponsiveHelper.isDesktop(context));
 
-    final configModel = Provider.of<SplashProvider>(context, listen: false).configModel;
-    final isHalalTagAvailable = (product.branchProduct?.halalStatus == 1) && (configModel?.halalTagStatus == 1);
-
-    final isLtr = Provider.of<LocalizationProvider>(context, listen: false).isLtr;
+    final configModel =
+        Provider.of<SplashProvider>(context, listen: false).configModel;
+    final isHalalTagAvailable =
+        (product.branchProduct?.halalStatus == 1) &&
+            (configModel?.halalTagStatus == 1);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12), // ✅ زودنا المسافة لتحت شوية
-      child: Column(
-        crossAxisAlignment: isCenterAlign
-            ? CrossAxisAlignment.center
-            : (isLtr ? CrossAxisAlignment.start : CrossAxisAlignment.end),
-        children: [
-          Row(
-            mainAxisAlignment: isCenterAlign
-                ? MainAxisAlignment.center
-                : (isLtr ? MainAxisAlignment.start : MainAxisAlignment.end),
-            children: [
-              Flexible(
-                child: Text(
-                  product.name!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: isCenterAlign ? TextAlign.center : (isLtr ? TextAlign.left : TextAlign.right),
-                  style: rubikSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge),
-                ),
-              ),
-              if (isHalalTagAvailable) const SizedBox(width: 6),
-              if (isHalalTagAvailable)
-                CustomAssetImageWidget(
-                  Images.halalIconSvg,
-                  height: 18,
-                  width: 18,
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-            ],
-          ),
-          const SizedBox(height: 8), // ✅ مسافة إضافية بين الاسم والتقييم
-          product.rating!.isNotEmpty && product.rating![0].average! > 0.0
-              ? RatingBarWidget(
-                  rating: product.rating![0].average!,
-                  size: 16,
-                )
-              : const SizedBox(),
-          const SizedBox(height: 12), // ✅ مسافة إضافية قبل السعر
-          Row(
-            mainAxisAlignment: isCenterAlign ? MainAxisAlignment.center : (isLtr ? MainAxisAlignment.start : MainAxisAlignment.end),
-            children: [
-              if (priceDiscount! > 0)
-                Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: CustomDirectionalityWidget(
-                    child: Text(
-                      PriceConverterHelper.convertPrice(startingPrice),
-                      style: rubikRegular.copyWith(
-                        fontSize: Dimensions.fontSizeDefault,
-                        decoration: TextDecoration.lineThrough,
-                        color: Theme.of(context).hintColor,
-                      ),
-                    ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Directionality(
+        textDirection: isLtr ? TextDirection.ltr : TextDirection.rtl, // ✅ اتجاه النص
+        child: Column(
+          crossAxisAlignment: isCenterAlign
+              ? CrossAxisAlignment.center
+              : (isLtr ? CrossAxisAlignment.start : CrossAxisAlignment.end), // ✅ المحاذاة
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: isCenterAlign
+                  ? MainAxisAlignment.center
+                  : (isLtr ? MainAxisAlignment.start : MainAxisAlignment.end),
+              children: [
+                Expanded(
+                  child: Text(
+                    product.name ?? '',
+                    softWrap: true,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: isCenterAlign
+                        ? TextAlign.center
+                        : (isLtr ? TextAlign.left : TextAlign.right), // ✅ النص يمين بالعربية
+                    style:
+                        rubikSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge),
                   ),
                 ),
-              CustomDirectionalityWidget(
-                child: Text(
-                  PriceConverterHelper.convertPrice(
-                    startingPrice,
-                    discount: product.discount,
-                    discountType: product.discountType,
+                if (isHalalTagAvailable) const SizedBox(width: 6),
+                if (isHalalTagAvailable)
+                  CustomAssetImageWidget(
+                    Images.halalIconSvg,
+                    height: 18,
+                    width: 18,
+                    color: Theme.of(context).secondaryHeaderColor,
                   ),
-                  style: rubikBold.copyWith(fontSize: Dimensions.fontSizeLarge),
-                ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+            const SizedBox(height: 6),
+            product.rating!.isNotEmpty && product.rating![0].average! > 0.0
+                ? RatingBarWidget(
+                    rating: product.rating![0].average!,
+                    size: 16,
+                  )
+                : const SizedBox(),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }
@@ -278,8 +325,10 @@ class _DiscountTagWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        PriceConverterHelper.getDiscountType(discount: product.discount, discountType: product.discountType),
-        style: rubikBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeSmall),
+        PriceConverterHelper.getDiscountType(
+            discount: product.discount, discountType: product.discountType),
+        style: rubikBold.copyWith(
+            color: Colors.white, fontSize: Dimensions.fontSizeSmall),
       ),
     );
   }

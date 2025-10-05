@@ -242,12 +242,12 @@ class MobileHomeScreen extends StatelessWidget {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate:
-                            SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
+                            SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 220,
                           crossAxisSpacing: Dimensions.paddingSizeSmall,
                           mainAxisSpacing: Dimensions.paddingSizeSmall,
                           mainAxisExtent:
-                              ResponsiveHelper.isMobile() ? 320 : 360,
+                              ResponsiveHelper.isMobile() ? 280 : 360,
                         ),
                         itemCount: products.length,
                         itemBuilder: (context, index) {
@@ -269,7 +269,7 @@ class MobileHomeScreen extends StatelessWidget {
                                         : ProductGroup.setMenu)
                                     : ProductGroup.common,
                             isShowBorder: true,
-                            imageHeight: 130,
+                            imageHeight: 110,
                             imageWidth: double.infinity,
                           );
                         },

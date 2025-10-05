@@ -80,11 +80,12 @@ class _SearchScreenState extends State<SearchScreen> {
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 boxShadow: [
+                  // Make the underline glow white instead of brown
                   BoxShadow(
-                    color: Theme.of(context).primaryColor,
-                    blurRadius: Dimensions.radiusSmall, // Adjust for soft shadow
-                    spreadRadius: 1, // Spread only affects bottom because of offset
-                    offset: const Offset(0, 4), // Only vertical shadow
+                    color: Colors.white,
+                    blurRadius: 6,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),

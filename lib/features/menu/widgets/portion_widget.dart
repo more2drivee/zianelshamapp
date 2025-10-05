@@ -15,7 +15,7 @@ class PortionWidget extends StatelessWidget {
   const PortionWidget({
     super.key, required this.imageIcon, required this.title,
     this.hideDivider = false, this.suffix, this.icon, this.onRoute,
-    this.iconColor,
+    this.iconColor, required int iconSize,
   });
 
   @override

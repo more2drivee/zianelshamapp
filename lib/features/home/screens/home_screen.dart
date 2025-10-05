@@ -24,6 +24,7 @@ import 'package:flutter_restaurant/features/menu/widgets/options_widget.dart';
 import 'package:flutter_restaurant/features/order/providers/order_provider.dart';
 import 'package:flutter_restaurant/features/profile/providers/profile_provider.dart';
 import 'package:flutter_restaurant/features/notification/providers/notification_provider.dart';
+import 'package:flutter_restaurant/features/cart/providers/cart_provider.dart';
 import 'package:flutter_restaurant/features/search/providers/search_provider.dart';
 import 'package:flutter_restaurant/features/splash/providers/splash_provider.dart';
 import 'package:flutter_restaurant/features/wishlist/providers/wishlist_provider.dart';
@@ -40,6 +41,7 @@ import 'package:flutter_restaurant/features/home/widgets/chefs_recommendation_wi
 import 'package:flutter_restaurant/common/widgets/custom_image_widget.dart';
 import 'package:flutter_restaurant/features/language/providers/language_provider.dart';
 import 'package:flutter_restaurant/features/language/providers/localization_provider.dart';
+import 'package:flutter_restaurant/common/widgets/new_item_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool fromAppBar;
@@ -152,103 +154,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
       //  Drawer من اليمين بعرض 60% + هيدر Guest
       endDrawer: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.7,
-        child: Drawer(
-          child: Column(
-            children: [
-              UserAccountsDrawerHeader(
-                margin: EdgeInsets.zero,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                ),
-                otherAccountsPictures: [
-                  // Favorite in drawer header
-                  IconButton(
-                    icon: const Icon(Icons.favorite, color: Colors.white),
-                    onPressed: () => RouterHelper.getDashboardRoute('favourite'),
-                  ),
-                  // Dark mode toggle in drawer header
-                  Consumer<ThemeProvider>(
-                    builder: (context, themeProvider, _) => IconButton(
-                      icon: Icon(
-                        themeProvider.darkTheme ? Icons.light_mode : Icons.dark_mode,
-                        color: Colors.white,
-                      ),
-                      onPressed: themeProvider.toggleTheme,
-                    ),
-                  ),
-                  // Language change in drawer header
-                  PopupMenuButton<int>(
-                    tooltip: '',
-                    offset: const Offset(0, 36),
-                    constraints: const BoxConstraints(maxWidth: 220),
-                    color: Theme.of(context).cardColor,
-                    itemBuilder: (ctx) => [
-                      const PopupMenuItem<int>(
-                        value: 0,
-                        child: Row(
-                          children: [
-                            Text('🇬🇧', style: TextStyle(fontSize: 18)),
-                            SizedBox(width: 8),
-                            Text('English'),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem<int>(
-                        value: 1,
-                        child: Row(
-                          children: [
-                            Text('🇪🇬', style: TextStyle(fontSize: 18)),
-                            SizedBox(width: 8),
-                            Text('العربية'),
-                          ],
-                        ),
-                      ),
-                    ],
-                    onSelected: (value) async {
-                      drawerGlobalKey.currentState?.closeEndDrawer();
-                      if (value == 0) {
-                        await Provider.of<LocalizationProvider>(context, listen: false)
-                            .setLanguage(const Locale('en', 'US'));
-                      } else {
-                        await Provider.of<LocalizationProvider>(context, listen: false)
-                            .setLanguage(const Locale('ar', 'EG'));
-                      }
-                      HomeScreen.loadData(true);
-                    },
-                    child: const Icon(Icons.language, color: Colors.white),
-                  ),
-                ],
-                accountName: Consumer<ProfileProvider>(
-                  builder: (context, profileProvider, _) {
-                    if (profileProvider.userInfoModel != null) {
-                      return Text(profileProvider.userInfoModel!.fName ?? '');
-                    } else {
-                      return const Text("Guest");
-                    }
-                  },
-                ),
-                accountEmail: Consumer<AuthProvider>(
-                  builder: (context, authProvider, _) {
-                    if(authProvider.isLoggedIn()) return const SizedBox();
-                    return InkWell(
-                      onTap: ()=> RouterHelper.getLoginRoute(),
-                      child: const Text("Sign Up / Log in"),
-                    );
-                  },
-                ),
-                currentAccountPicture: const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.person, color: Colors.grey, size: 40),
-                ),
-              ),
-              const Expanded(
-                child: OptionsWidget(onTap: null),
-              ),
-            ],
-          ),
-        ),
-      ),
+  width: MediaQuery.of(context).size.width * 0.7,
+  child: const Drawer(
+    child: OptionsWidget(onTap: null),
+  ),
+),
+
 
       endDrawerEnableOpenDragGesture: false,
       appBar: isDesktop
@@ -342,6 +253,44 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                     const SizedBox(width: 4),
+                    Consumer<CartProvider>(
+                      builder: (context, cartProvider, _) {
+                        final int cartCount = cartProvider.cartList.fold(
+                            0, (sum, item) => sum + (item?.quantity ?? 0));
+                        if (cartCount <= 0) return const SizedBox();
+                        return IconButton(
+                          icon: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              const Icon(Icons.shopping_cart, color: Colors.white),
+                              Positioned(
+                                right: -2,
+                                top: -2,
+                                child: Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  constraints: const BoxConstraints(
+                                      minWidth: 14, minHeight: 14),
+                                  child: Text(
+                                    '$cartCount',
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 10),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          onPressed: () {
+                            RouterHelper.getDashboardRoute('cart');
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(width: 4),
                     IconButton(
                       icon: const Icon(Icons.menu, color: Colors.white),
                       onPressed: () {
@@ -404,10 +353,21 @@ if (!isDesktop)
     delegate: SliverDelegateWidget(
       child: Center(
         child: Container(
-          color: Theme.of(context).primaryColor,
+          // لون الخلفية يجب أن يكون داخل BoxDecoration عندما نستخدم decoration
           padding: const EdgeInsets.symmetric(
             horizontal: Dimensions.paddingSizeSmall,
             vertical: 8,
+          ),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.white,
+                blurRadius: 6,
+                spreadRadius: 0,
+                offset: Offset(0, 4),
+              ),
+            ],
           ),
           child: TextField(
             readOnly: true, // يخلي الصندوق زرار يفتح صفحة البحث
@@ -454,6 +414,8 @@ if (!isDesktop)
                         },
                       ),
                       const ChefsRecommendationWidget(),
+                      const SizedBox(height: Dimensions.paddingSizeDefault),
+                      const NewItemsWidget(),
                       const SizedBox(
                           height: Dimensions.paddingSizeDefault),
                       if (isDesktop)
