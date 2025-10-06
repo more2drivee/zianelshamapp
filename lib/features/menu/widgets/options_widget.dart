@@ -33,7 +33,7 @@ class OptionsWidget extends StatelessWidget {
 
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) => ListView(
-        physics: const BouncingScrollPhysics(),
+        physics: const ClampingScrollPhysics(),
         padding: EdgeInsets.zero,
         children: [
 

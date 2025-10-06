@@ -243,11 +243,11 @@ class MobileHomeScreen extends StatelessWidget {
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate:
                             SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 220,
+                          maxCrossAxisExtent: 230,
                           crossAxisSpacing: Dimensions.paddingSizeSmall,
                           mainAxisSpacing: Dimensions.paddingSizeSmall,
                           mainAxisExtent:
-                              ResponsiveHelper.isMobile() ? 280 : 360,
+                              ResponsiveHelper.isMobile() ? 240 : 360,
                         ),
                         itemCount: products.length,
                         itemBuilder: (context, index) {

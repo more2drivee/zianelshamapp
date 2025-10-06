@@ -79,21 +79,19 @@ class ProductCardWidget extends StatelessWidget {
                     .primaryColor
                     .withOpacity(isShowBorder ? 0.2 : 0),
               ),
-              borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: InkWell(
               onTap: () => ProductHelper.addToCart(
                   cartIndex: cartIndex, product: product),
               hoverColor: Theme.of(context).primaryColor.withOpacity(0.03),
-              child: Directionality( // ✅ الاتجاه العام للكارت كله
+              child: Directionality(
                 textDirection: isLtr ? TextDirection.ltr : TextDirection.rtl,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Stack(
                   children: [
-
-                    // الصورة + التفاصيل
+                    // صورة + تفاصيل المنتج
                     Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Stack(
@@ -133,62 +131,59 @@ class ProductCardWidget extends StatelessWidget {
                           productGroup: productGroup,
                           isLtr: isLtr,
                         ),
+                        const SizedBox(height: 40),
                       ],
                     ),
 
-                    const SizedBox(height: 6),
-
-              // ✅ صف السعر والبلص في الأسفل
-              Padding(
-                padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      child: Row(
-                        mainAxisAlignment:
-                            isLtr ? MainAxisAlignment.start : MainAxisAlignment.end,
-                        children: [
-                          if (productProvider.checkStock(product) && isAvailable)
-                            InkWell(
-                              onTap: () => ProductHelper.addToCart(
-                                  cartIndex: cartIndex, product: product),
-                              borderRadius: BorderRadius.circular(8),
-                              child: Container(
-                                height: 32,
-                                width: 32,
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Theme.of(context)
-                                          .shadowColor
-                                          .withOpacity(0.15),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                alignment: Alignment.center,
-                                child: const Icon(Icons.add,
-                                    color: Colors.white, size: 20),
-                              ),
-                            ),
-                          const Spacer(),
-                          CustomDirectionalityWidget(
-                            child: Text(
-                              PriceConverterHelper.convertPrice(
-                                startingPrice,
-                                discount: product.discount,
-                                discountType: product.discountType,
-                              ),
-                              textAlign:
-                                  isLtr ? TextAlign.left : TextAlign.right, // ✅ السعر يمين بالعربية
-                              style: rubikBold.copyWith(
-                                  fontSize: Dimensions.fontSizeLarge),
-                            ),
+                    // ✅ السعر + البلص في الزاوية السفلية
+                    Positioned(
+                      bottom: 8,
+                      left: isLtr ? 12 : null,
+                      right: isLtr ? null : 12,
+                      child: CustomDirectionalityWidget(
+                        child: Text(
+                          PriceConverterHelper.convertPrice(
+                            startingPrice,
+                            discount: product.discount,
+                            discountType: product.discountType,
                           ),
-                        ],
+                          textAlign:
+                              isLtr ? TextAlign.left : TextAlign.right,
+                          style: rubikBold.copyWith(
+                              fontSize: Dimensions.fontSizeLarge),
+                        ),
                       ),
                     ),
+
+                   if (productProvider.checkStock(product) && isAvailable)
+  Positioned(
+    bottom: 2, // ⬅️ قرب أكتر من الحافة السفلية
+    right: isLtr ? 2 : null, // ⬅️ قرب أكتر من الحافة اليمنى
+    left: isLtr ? null : 2,  // ⬅️ في حالة اللغة العربية
+    child: InkWell(
+      onTap: () => ProductHelper.addToCart(
+          cartIndex: cartIndex, product: product),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        height: 28, // ⬅️ صغّرها سنة كمان
+        width: 28,
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).shadowColor.withOpacity(0.15),
+              blurRadius: 3,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        alignment: Alignment.center,
+        child: const Icon(Icons.add, color: Colors.white, size: 16),
+      ),
+    ),
+  ),
+
                   ],
                 ),
               ),
@@ -216,7 +211,10 @@ class _ProductImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.zero,
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(16),
+        topRight: Radius.circular(16),
+      ),
       child: CustomImageWidget(
         placeholder: Images.placeholderRectangle,
         fit: BoxFit.cover,
@@ -260,11 +258,11 @@ class _ProductDescriptionWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Directionality(
-        textDirection: isLtr ? TextDirection.ltr : TextDirection.rtl, // ✅ اتجاه النص
+        textDirection: isLtr ? TextDirection.ltr : TextDirection.rtl,
         child: Column(
           crossAxisAlignment: isCenterAlign
               ? CrossAxisAlignment.center
-              : (isLtr ? CrossAxisAlignment.start : CrossAxisAlignment.end), // ✅ المحاذاة
+              : (isLtr ? CrossAxisAlignment.start : CrossAxisAlignment.end),
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,7 +278,7 @@ class _ProductDescriptionWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     textAlign: isCenterAlign
                         ? TextAlign.center
-                        : (isLtr ? TextAlign.left : TextAlign.right), // ✅ النص يمين بالعربية
+                        : (isLtr ? TextAlign.left : TextAlign.right),
                     style:
                         rubikSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge),
                   ),

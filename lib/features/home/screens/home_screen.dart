@@ -40,13 +40,13 @@ import 'mobile_home_screen.dart';
 import 'package:flutter_restaurant/features/home/widgets/chefs_recommendation_widget.dart';
 import 'package:flutter_restaurant/common/widgets/custom_image_widget.dart';
 import 'package:flutter_restaurant/features/language/providers/language_provider.dart';
-import 'package:flutter_restaurant/features/language/providers/localization_provider.dart';
-import 'package:flutter_restaurant/common/widgets/new_item_widget.dart';
+  import 'package:flutter_restaurant/features/language/providers/localization_provider.dart';
+  import 'package:flutter_restaurant/common/widgets/new_item_widget.dart';
+  import 'package:flutter_restaurant/common/widgets/offers_banner_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool fromAppBar;
   const HomeScreen(this.fromAppBar, {super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 
@@ -414,6 +414,8 @@ if (!isDesktop)
                         },
                       ),
                       const ChefsRecommendationWidget(),
+                      const SizedBox(height: Dimensions.paddingSizeDefault),
+                      //const OffersBannerWidget(),
                       const SizedBox(height: Dimensions.paddingSizeDefault),
                       const NewItemsWidget(),
                       const SizedBox(
