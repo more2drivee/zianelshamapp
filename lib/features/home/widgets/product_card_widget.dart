@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_restaurant/common/models/config_model.dart';
 import 'package:flutter_restaurant/common/models/product_model.dart';
 import 'package:flutter_restaurant/common/widgets/add_cart_button_widget.dart';
@@ -63,10 +64,10 @@ class ProductCardWidget extends StatelessWidget {
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).shadowColor.withOpacity(0.15),
-                blurRadius: 6,
-                spreadRadius: 1,
-                offset: const Offset(0, 3),
+                color: Theme.of(context).shadowColor.withOpacity(0.10),
+                blurRadius: 3,
+                spreadRadius: 0,
+                offset: const Offset(0, 2),
               )
             ],
           ),
@@ -131,7 +132,7 @@ class ProductCardWidget extends StatelessWidget {
                           productGroup: productGroup,
                           isLtr: isLtr,
                         ),
-                        const SizedBox(height: 40),
+                        SizedBox(height: kIsWeb ? 16 : 32),
                       ],
                     ),
 
@@ -157,29 +158,28 @@ class ProductCardWidget extends StatelessWidget {
 
                    if (productProvider.checkStock(product) && isAvailable)
   Positioned(
-    bottom: 2, // ⬅️ قرب أكتر من الحافة السفلية
-    right: isLtr ? 2 : null, // ⬅️ قرب أكتر من الحافة اليمنى
-    left: isLtr ? null : 2,  // ⬅️ في حالة اللغة العربية
+    bottom: 0,
+    right: isLtr ? 0 : null,
+    left: isLtr ? null : 0,
     child: InkWell(
       onTap: () => ProductHelper.addToCart(
           cartIndex: cartIndex, product: product),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.only(
+        bottomRight: isLtr ? const Radius.circular(12) : Radius.zero,
+        bottomLeft: isLtr ? Radius.zero : const Radius.circular(12),
+      ),
       child: Container(
-        height: 28, // ⬅️ صغّرها سنة كمان
-        width: 28,
+        height: 32,
+        width: 36,
         decoration: BoxDecoration(
           color: Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).shadowColor.withOpacity(0.15),
-              blurRadius: 3,
-              offset: const Offset(0, 1),
-            ),
-          ],
+          borderRadius: BorderRadius.only(
+            bottomRight: isLtr ? const Radius.circular(12) : Radius.zero,
+            bottomLeft: isLtr ? Radius.zero : const Radius.circular(12),
+          ),
         ),
         alignment: Alignment.center,
-        child: const Icon(Icons.add, color: Colors.white, size: 16),
+        child: const Icon(Icons.add, color: Colors.white, size: 18),
       ),
     ),
   ),

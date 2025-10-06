@@ -6,7 +6,6 @@ import 'package:flutter_restaurant/common/widgets/custom_asset_image_widget.dart
 import 'package:flutter_restaurant/common/widgets/custom_image_widget.dart';
 import 'package:flutter_restaurant/common/widgets/custom_text_field_widget.dart';
 import 'package:flutter_restaurant/common/widgets/on_hover_widget.dart';
-import 'package:flutter_restaurant/common/widgets/theme_switch_button_widget.dart';
 import 'package:flutter_restaurant/features/address/providers/location_provider.dart';
 import 'package:flutter_restaurant/features/branch/providers/branch_provider.dart';
 import 'package:flutter_restaurant/features/cart/providers/cart_provider.dart';
@@ -18,6 +17,7 @@ import 'package:flutter_restaurant/features/home/widgets/language_hover_widget.d
 import 'package:flutter_restaurant/features/language/providers/language_provider.dart';
 import 'package:flutter_restaurant/features/language/providers/localization_provider.dart';
 import 'package:flutter_restaurant/features/profile/providers/profile_provider.dart';
+import 'package:flutter_restaurant/features/notification/providers/notification_provider.dart';
 import 'package:flutter_restaurant/features/search/providers/search_provider.dart';
 import 'package:flutter_restaurant/features/search/widget/search_recommended_widget.dart';
 import 'package:flutter_restaurant/features/search/widget/search_suggestion_widget.dart';
@@ -288,33 +288,7 @@ List<PopupMenuEntry<Object>> popUpMenuList(BuildContext context) {
               ),
             ),
 
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              const ThemeSwitchButtonWidget(),
-              const SizedBox(width: Dimensions.paddingSizeExtraLarge),
-
-              if(AppConstants.languages.length > 1) SizedBox(
-                height: Dimensions.paddingSizeLarge,
-                child: OnHoverWidget(
-                  builder: (isHovered) {
-                    final color = isHovered ? Theme.of(context).primaryColor : Theme.of(context).textTheme.titleLarge?.color;
-
-                    return MouseRegion(
-                      onHover: (details) {
-                        _showPopupMenu(details.position, context, false);
-                      },
-                      child: Row(children: [
-                        Text('${currentLanguage.languageCode?.toUpperCase()}', style: rubikSemiBold.copyWith(
-                          color: color, fontSize: Dimensions.fontSizeExtraSmall,
-                        )),
-                        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                        Icon(Icons.expand_more, color: color, size: Dimensions.paddingSizeLarge)
-                      ]),
-                    );
-                  },
-                ),
-              ),
-            ]),
+            const SizedBox.shrink(),
           ]),
         ))),
 
@@ -427,11 +401,34 @@ List<PopupMenuEntry<Object>> popUpMenuList(BuildContext context) {
             }),
           ),
 
+          // Notifications icon with count (web app bar)
+          InkWell(
+            onTap: () async {
+              // Refresh notifications before navigating
+              await Provider.of<NotificationProvider>(context, listen: false)
+                  .getNotificationList(context);
+              RouterHelper.getNotificationRoute();
+            },
+            child: OnHoverWidget(builder: (isHover) {
+              return Consumer<NotificationProvider>(
+                builder: (context, notificationProvider, _) {
+                  final int notifCount = notificationProvider.notificationList?.length ?? 0;
+                  return CountIconView(
+                    count: '$notifCount',
+                    icon: Icons.notifications,
+                    color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha:0.5),
+                  );
+                },
+              );
+            }),
+          ),
+
           InkWell(
             onTap: ()=> RouterHelper.getDashboardRoute('cart'),
             child: OnHoverWidget(builder: (isHover)=> CountIconView(
               count: Provider.of<CartProvider>(context).cartList.length.toString(),
-              image: Images.navOrderSvg,
+              icon: Icons.shopping_cart,
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha:0.5),
             )),
           ),
 
@@ -456,11 +453,13 @@ List<PopupMenuEntry<Object>> popUpMenuList(BuildContext context) {
             ),
           )),
 
-          OnHoverWidget(builder: (isHover)=> InkWell(
-            onTap: ()=> RouterHelper.getDashboardRoute('menu'),
-            child: Icon(
-              Icons.menu, size: Dimensions.paddingSizeExtraLarge,
-              color: Theme.of(context).primaryColor,
+          OnHoverWidget(builder: (isHover)=> Builder(
+            builder: (ctx) => InkWell(
+              onTap: () => Scaffold.maybeOf(ctx)?.openEndDrawer(),
+              child: Icon(
+                Icons.menu, size: Dimensions.paddingSizeExtraLarge,
+                color: Theme.of(context).primaryColor,
+              ),
             ),
           )),
         ])))),

@@ -21,6 +21,7 @@ import 'package:flutter_restaurant/features/home/widgets/product_view_widget.dar
 import 'package:flutter_restaurant/features/home/widgets/whats_new_section_widget.dart'
     show WhatsNewSectionWidget;
 import 'package:flutter_restaurant/features/menu/widgets/options_widget.dart';
+import 'package:flutter_restaurant/features/menu/widgets/menu_web_widget.dart';
 import 'package:flutter_restaurant/features/order/providers/order_provider.dart';
 import 'package:flutter_restaurant/features/profile/providers/profile_provider.dart';
 import 'package:flutter_restaurant/features/notification/providers/notification_provider.dart';
@@ -154,9 +155,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
       //  Drawer من اليمين بعرض 60% + هيدر Guest
       endDrawer: SizedBox(
-  width: MediaQuery.of(context).size.width * 0.7,
-  child: const Drawer(
-    child: OptionsWidget(onTap: null),
+  width: MediaQuery.of(context).size.width * (isDesktop ? 0.5 : 0.7),
+  child: Drawer(
+    child: isDesktop
+        ? const MenuWebWidget()
+        : const OptionsWidget(onTap: null),
   ),
 ),
 
@@ -303,47 +306,58 @@ class _HomeScreenState extends State<HomeScreen> {
                   floating: false,
                   elevation: 0,
                   backgroundColor: Theme.of(context).primaryColor,
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(40),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 12, right: 12, bottom: 8),
-                      child: Consumer<LocationProvider>(
-                        builder: (context, locationProvider, _) {
-                          return locationProvider.isLoading
-                              ? const SizedBox()
-                              : InkWell(
-                                  onTap: () => RouterHelper.getAddressRoute(),
-                                  child: Row(
-                                    children: [
-                                      const Icon(Icons.location_on,
-                                          size: 18, color: Colors.white),
-                                      const SizedBox(width: 6),
-                                      Flexible(
-                                        child: Text(
-                                          locationProvider
-                                                  .currentAddress?.address ??
-                                              getTranslated(
-                                                  'no_location_selected',
-                                                  context)!,
-                                          style: rubikRegular.copyWith(
-                                            fontSize:
-                                                Dimensions.fontSizeLarge,
-                                            color: Colors.white,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      const Icon(Icons.expand_more,
-                                          size: 18, color: Colors.white),
-                                    ],
-                                  ),
-                                );
-                        },
-                      ),
+                 bottom: PreferredSize(
+  preferredSize: const Size.fromHeight(25), // ⬅️ قللنا الارتفاع
+  child: Padding(
+    padding: const EdgeInsets.only(top: 4, bottom: 4), // ⬅️ رفعناها لفوق شويه
+    child: Consumer<LocationProvider>(
+      builder: (context, locationProvider, _) {
+        return locationProvider.isLoading
+            ? const SizedBox()
+            : Center( // ⬅️ توسيط العنصر داخل الأب بار
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  constraints: const BoxConstraints(maxWidth: 220), // ⬅️ قللنا العرض الأقصى
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15), // خلفية خفيفة شفافة
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: InkWell(
+                    onTap: () => RouterHelper.getAddressRoute(),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min, // ⬅️ العرض على قد المحتوى
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.location_on,
+                            size: 14, color: Colors.white),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            locationProvider.currentAddress?.address ??
+                                getTranslated('no_location_selected', context)!,
+                            style: rubikRegular.copyWith(
+                              fontSize: 12, // ⬅️ تصغير النص
+                              color: Colors.white,
+                              height: 1.1,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        const Icon(Icons.expand_more,
+                            size: 12, color: Colors.white),
+                      ],
                     ),
                   ),
+                ),
+              );
+      },
+    ),
+  ),
+),
+
                 ),
 
               //  Search Bar
@@ -400,9 +414,10 @@ if (!isDesktop)
   ),
               //  Banner + محتوى الصفحة
               SliverToBoxAdapter(
-                child: SizedBox(
-                  width: Dimensions.webScreenWidth,
-                  child: Column(
+                child: Center(
+                  child: SizedBox(
+                    width: Dimensions.webScreenWidth,
+                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Consumer<BannerProvider>(
@@ -428,7 +443,7 @@ if (!isDesktop)
                                   CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                  flex: 1,
+                                  flex: 2, // ⬅️ تكبير عرض قائمة الكاتيجوري
                                   child: categoryProvider
                                               .categoryList?.isNotEmpty ??
                                           false
@@ -439,7 +454,7 @@ if (!isDesktop)
                                     width:
                                         Dimensions.paddingSizeDefault),
                                 Expanded(
-                                  flex: 4,
+                                  flex: 3, // ⬅️ تقليل مساحة قسم المنتجات بالمقابل
                                   child: !categoryProvider
                                           .isCategorySelected
                                       ? ProductViewWidget(
@@ -457,6 +472,7 @@ if (!isDesktop)
                         MobileHomeScreen(
                             scrollController: _scrollController),
                     ],
+                  ),
                   ),
                 ),
               ),

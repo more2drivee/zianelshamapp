@@ -227,7 +227,7 @@ class _FooterWidgetState extends State<FooterWidget> {
       ),
 
 
-      Positioned.fill(child: Align(alignment: Alignment.topCenter, child: Stack(
+      /*Positioned.fill(child: Align(alignment: Alignment.topCenter, child: Stack(
         children: [
           Positioned.fill(child: Align(
             alignment: Alignment.centerRight,
@@ -312,7 +312,7 @@ class _FooterWidgetState extends State<FooterWidget> {
 
 
         ],
-      ))),
+      ))),*/
 
 
     ]);

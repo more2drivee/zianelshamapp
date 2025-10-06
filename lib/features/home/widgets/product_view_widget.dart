@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_restaurant/common/widgets/product_shimmer_widget.dart';
 import 'package:flutter_restaurant/common/widgets/paginated_list_widget.dart';
 import 'package:flutter_restaurant/features/home/enums/product_group_enum.dart';
@@ -48,12 +49,14 @@ class ProductViewWidget extends StatelessWidget {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
+                      crossAxisCount: isDesktop ? 3 : 2,
                       crossAxisSpacing: Dimensions.paddingSizeSmall,
                       mainAxisSpacing: Dimensions.paddingSizeSmall,
                       mainAxisExtent: ResponsiveHelper.isMobile()
                           ? 360
-                          : (sortingProvider.viewChangeTo == ViewChangeTo.gridView ? 400 : 300),
+                          : (sortingProvider.viewChangeTo == ViewChangeTo.gridView
+                              ? (kIsWeb ? 300 : 340)
+                              : (kIsWeb ? 260 : 280)),
                     ),
                     itemCount: products.length,
                     itemBuilder: (context, index) {
@@ -72,7 +75,9 @@ class ProductViewWidget extends StatelessWidget {
                             : ProductGroup.common,
                         isShowBorder: true,
                         imageHeight: !ResponsiveHelper.isMobile()
-                            ? (sortingProvider.viewChangeTo == ViewChangeTo.listView ? 160 : 220)
+                            ? (sortingProvider.viewChangeTo == ViewChangeTo.listView
+                                ? (kIsWeb ? 130 : 150)
+                                : (kIsWeb ? 160 : 180))
                             : 130,
                         imageWidth: (isDesktop || ResponsiveHelper.isTab(context)) &&
                                 sortingProvider.viewChangeTo == ViewChangeTo.listView

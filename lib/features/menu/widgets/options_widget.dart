@@ -19,6 +19,8 @@ import 'package:flutter_restaurant/utill/styles.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../common/providers/theme_provider.dart';
+import 'package:flutter_restaurant/features/profile/providers/profile_provider.dart';
+
 
 class OptionsWidget extends StatelessWidget {
   final Function? onTap;
@@ -30,6 +32,16 @@ class OptionsWidget extends StatelessWidget {
         Provider.of<SplashProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final bool isLoggedIn = authProvider.isLoggedIn();
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    final user = profileProvider.userInfoModel;
+    final String displayName = isLoggedIn
+        ? (() {
+            final f = (user?.fName ?? '').trim();
+            final l = (user?.lName ?? '').trim();
+            final full = [f, l].where((e) => e.isNotEmpty).join(' ');
+            return full.isNotEmpty ? full : 'User';
+          })()
+        : 'Guest';
 
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) => ListView(

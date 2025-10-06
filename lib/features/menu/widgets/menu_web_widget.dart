@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restaurant/common/widgets/custom_alert_dialog_widget.dart';
 import 'package:flutter_restaurant/common/widgets/custom_image_widget.dart';
-import 'package:flutter_restaurant/common/widgets/footer_widget.dart';
 import 'package:flutter_restaurant/features/auth/providers/auth_provider.dart';
 import 'package:flutter_restaurant/features/language/providers/localization_provider.dart';
 import 'package:flutter_restaurant/features/menu/domain/models/menu_model.dart';
 import 'package:flutter_restaurant/features/menu/widgets/header_item_details_widget.dart';
 import 'package:flutter_restaurant/features/menu/widgets/menu_item_web_widget.dart';
 import 'package:flutter_restaurant/features/profile/providers/profile_provider.dart';
+import 'package:flutter_restaurant/common/widgets/theme_switch_button_widget.dart';
+import 'package:flutter_restaurant/common/widgets/on_hover_widget.dart';
+import 'package:flutter_restaurant/features/home/widgets/language_hover_widget.dart';
 import 'package:flutter_restaurant/features/splash/providers/splash_provider.dart';
 import 'package:flutter_restaurant/helper/price_converter_helper.dart';
 import 'package:flutter_restaurant/helper/responsive_helper.dart';
@@ -169,38 +171,95 @@ class MenuWebWidget extends StatelessWidget {
                 right: localizationProvider.isLtr ?  0 : null,
                 top: Dimensions.paddingSizeSmall,
                 left: localizationProvider.isLtr ? null : 0,
-                child: isLoggedIn ? Padding(
-                  padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-                  child: InkWell(
-                    onTap: (){
-                      ResponsiveHelper.showDialogOrBottomSheet(context, Consumer<AuthProvider>(
-                          builder: (context, authProvider, _) {
-                            return CustomAlertDialogWidget(
-                              isLoading: authProvider.isLoading,
-                              title: getTranslated('are_you_sure_to_delete_account', context),
-                              subTitle: getTranslated('it_will_remove_your_all_information', context),
-                              icon: Icons.question_mark_sharp,
-                              isSingleButton: authProvider.isLoading,
-                              leftButtonText: getTranslated('yes', context),
-                              rightButtonText: getTranslated('no', context),
-                              onPressLeft: () => authProvider.deleteUser(),
-                            );
-                          }
-                          ));
-                      },
+                child: Builder(
+                  builder: (ctx) {
+                    // Local helper to show language popup like web app bar
+                    Future<void> _showLanguagePopup(Offset offset) async {
+                      final RenderBox overlay = Overlay.of(ctx).context.findRenderObject() as RenderBox;
+                      await showMenu(
+                        context: ctx,
+                        position: RelativeRect.fromLTRB(offset.dx, offset.dy, overlay.size.width, overlay.size.height),
+                        items: <PopupMenuEntry<Object>>[
+                          PopupMenuItem(
+                            padding: EdgeInsets.zero,
+                            value: AppConstants.languages,
+                            child: MouseRegion(
+                              onExit: (_) => Navigator.of(ctx).maybePop(),
+                              child: LanguageHoverWidget(languageList: AppConstants.languages),
+                            ),
+                          ),
+                        ],
+                        elevation: 8.0,
+                        constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.8),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(Dimensions.radiusDefault)),
+                        ),
+                      );
+                    }
 
-                child: Row(children: [
-                  Padding(padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
-                    child: Icon(Icons.delete, color: Theme.of(context).primaryColor, size: 16),
-                  ),
+                    final currentLangCode = localizationProvider.locale.languageCode?.toUpperCase();
 
-                  Padding(padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
-                    child: Text(getTranslated('delete_account', context)!),
-                  ),
-                ],),
-              ),
+                    return Padding(
+                      padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        const ThemeSwitchButtonWidget(),
+                        const SizedBox(width: Dimensions.paddingSizeExtraLarge),
 
-            ) : const SizedBox()),
+                        if(AppConstants.languages.length > 1) SizedBox(
+                          height: Dimensions.paddingSizeLarge,
+                          child: OnHoverWidget(
+                            builder: (isHovered) {
+                              final color = isHovered ? Theme.of(context).primaryColor : Theme.of(context).textTheme.titleLarge?.color;
+                              return MouseRegion(
+                                onHover: (details) {
+                                  _showLanguagePopup(details.position);
+                                },
+                                child: Row(children: [
+                                  Text('${currentLangCode}', style: Theme.of(context).textTheme.titleSmall?.copyWith(color: color)),
+                                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                  Icon(Icons.expand_more, color: color, size: Dimensions.paddingSizeLarge),
+                                ]),
+                              );
+                            },
+                          ),
+                        ),
+
+                        if(isLoggedIn) ...[
+                          const SizedBox(width: Dimensions.paddingSizeLarge),
+                          InkWell(
+                            onTap: (){
+                              ResponsiveHelper.showDialogOrBottomSheet(context, Consumer<AuthProvider>(
+                                  builder: (context, authProvider, _) {
+                                    return CustomAlertDialogWidget(
+                                      isLoading: authProvider.isLoading,
+                                      title: getTranslated('are_you_sure_to_delete_account', context),
+                                      subTitle: getTranslated('it_will_remove_your_all_information', context),
+                                      icon: Icons.question_mark_sharp,
+                                      isSingleButton: authProvider.isLoading,
+                                      leftButtonText: getTranslated('yes', context),
+                                      rightButtonText: getTranslated('no', context),
+                                      onPressLeft: () => authProvider.deleteUser(),
+                                    );
+                                  }
+                                  ));
+                            },
+                            child: Row(children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
+                                child: Icon(Icons.delete, color: Theme.of(context).primaryColor, size: 16),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
+                                child: Text(getTranslated('delete_account', context)!),
+                              ),
+                            ]),
+                          ),
+                        ]
+                      ]),
+                    );
+                  },
+                )
+            ),
           ]),
           const SizedBox(height: Dimensions.paddingSizeDefault),
 
@@ -208,7 +267,7 @@ class MenuWebWidget extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 8,
+              crossAxisCount: 4,
               crossAxisSpacing: Dimensions.paddingSizeExtraLarge,
               mainAxisSpacing: Dimensions.paddingSizeExtraLarge,
             ),
@@ -217,13 +276,13 @@ class MenuWebWidget extends StatelessWidget {
           ),
           const SizedBox(height: 50),
 
-          Text('${getTranslated('version', context)} ${ AppConstants.appVersion}'),
-          const SizedBox(height: 50),
+          /*Text('${getTranslated('version', context)} ${ AppConstants.appVersion}'),
+          const SizedBox(height: 50),*/
 
         ]));
       })),
 
-      const FooterWidget(),
+      //const FooterWidget(),
 
     ]));
   }
