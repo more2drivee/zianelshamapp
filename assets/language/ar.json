@@ -339,7 +339,7 @@
   "review_submitted_successfully": "تم إرسال المراجعة بنجاح",
   "all": "الكل",
   "non_veg": "غير نباتي",
-  "veg": "نباتي",
+  "veg": "رجيم",
   "show_less": "عرض أقل",
   "show_more": "عرض المزيد",
   "dine_in": "تناول الطعام في",
@@ -830,6 +830,10 @@
   "get_rewarded_points": "كل طلب لك عليه مكافأة.. اجمع النقاط!",
   "easy_payment_points": "اجمع النقاط وادفع بسهولة!",
   "our_new" :"جديدنا",
-  "offers": "العروض"
+  "offers": "العروض",
+  "menu_Categories":"الفئات",
+  "subcategories":"الفئات الفرعيه",
+  "Select a category to explore":"حدد الفئة",
+  "calories":"سعرات حراريه"
 
 }

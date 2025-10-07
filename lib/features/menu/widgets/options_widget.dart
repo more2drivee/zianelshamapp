@@ -86,7 +86,7 @@ class OptionsWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isLoggedIn ? "User" : "Guest",
+                          isLoggedIn ? displayName : "Guest",
                           style: rubikSemiBold.copyWith(
                             fontSize: 16,
                             color: ThemeData.estimateBrightnessForColor(

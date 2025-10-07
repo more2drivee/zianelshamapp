@@ -22,6 +22,7 @@ import 'package:flutter_restaurant/utill/images.dart';
 import 'package:flutter_restaurant/utill/styles.dart';
 import 'package:provider/provider.dart';
 import '../../../common/widgets/rating_bar_widget.dart';
+import 'package:flutter_restaurant/localization/language_constrants.dart';
 
 class ProductCardWidget extends StatelessWidget {
   final Product product;
@@ -86,106 +87,120 @@ class ProductCardWidget extends StatelessWidget {
               onTap: () => ProductHelper.addToCart(
                   cartIndex: cartIndex, product: product),
               hoverColor: Theme.of(context).primaryColor.withOpacity(0.03),
-              child: Directionality(
-                textDirection: isLtr ? TextDirection.ltr : TextDirection.rtl,
-                child: Stack(
-                  children: [
-                    // صورة + تفاصيل المنتج
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          children: [
-                            _ProductImageWidget(
-                              imageHeight: imageHeight,
-                              imageWidth: imageWidth,
-                              productImage: productImage,
-                              productGroup: productGroup,
-                            ),
-                            StockTagWidget(
-                                product: product, productGroup: productGroup),
-                            Positioned(
-                              right: isLtr
-                                  ? Dimensions.paddingSizeSmall
-                                  : null,
-                              top: Dimensions.paddingSizeSmall,
-                              left: isLtr
-                                  ? null
-                                  : Dimensions.paddingSizeSmall,
-                              child: WishButtonWidget(product: product),
-                            ),
-                            if (product.discount != null && product.discount != 0)
-                              Positioned(
-                                top: 12,
-                                left: 12,
-                                child: _DiscountTagWidget(
-                                    product: product,
-                                    productGroup: productGroup),
-                              ),
-                          ],
-                        ),
-                        _ProductDescriptionWidget(
-                          product: product,
-                          priceDiscount: priceDiscount,
-                          startingPrice: startingPrice,
-                          productGroup: productGroup,
-                          isLtr: isLtr,
-                        ),
-                        SizedBox(height: kIsWeb ? 16 : 32),
-                      ],
-                    ),
-
-                    // ✅ السعر + البلص في الزاوية السفلية
-                    Positioned(
-                      bottom: 8,
-                      left: isLtr ? 12 : null,
-                      right: isLtr ? null : 12,
-                      child: CustomDirectionalityWidget(
-                        child: Text(
-                          PriceConverterHelper.convertPrice(
-                            startingPrice,
-                            discount: product.discount,
-                            discountType: product.discountType,
+              child: Stack(
+                children: [
+                  // صورة المنتج
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        children: [
+                          _ProductImageWidget(
+                            imageHeight: imageHeight,
+                            imageWidth: imageWidth,
+                            productImage: productImage,
+                            productGroup: productGroup,
                           ),
-                          textAlign:
-                              isLtr ? TextAlign.left : TextAlign.right,
-                          style: rubikBold.copyWith(
-                              fontSize: Dimensions.fontSizeLarge),
+                          StockTagWidget(
+                              product: product, productGroup: productGroup),
+
+                          // ✅ شارة VEG تتبدل حسب اللغة
+                          if (product.productType == 'veg')
+                            Positioned(
+                              top: (imageHeight / 5) - 12,
+                              left: isLtr ? 0 : null,
+                              right: isLtr ? null : 0,
+                              child: ClipPath(
+                                clipper: isLtr
+                                    ? _TagRightClipper()
+                                    : _TagLeftClipper(),
+                                child: Container(
+                                  height: 24,
+                                  color: Colors.green,
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  child: Text(
+                                    getTranslated('veg', context)!,
+                                    style: rubikMedium.copyWith(
+                                      fontSize: 10,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          if (product.discount != null && product.discount != 0)
+                            Positioned(
+                              top: 12,
+                              left: 12,
+                              child: _DiscountTagWidget(
+                                  product: product,
+                                  productGroup: productGroup),
+                            ),
+                        ],
+                      ),
+
+                      // تفاصيل المنتج
+                      _ProductDescriptionWidget(
+                        product: product,
+                        priceDiscount: priceDiscount,
+                        startingPrice: startingPrice,
+                        productGroup: productGroup,
+                        isLtr: isLtr,
+                      ),
+                      SizedBox(height: kIsWeb ? 16 : 32),
+                    ],
+                  ),
+
+                  // ✅ السعر + زر الإضافة
+                  Positioned(
+                    bottom: 8,
+                    left: isLtr ? 12 : null,
+                    right: isLtr ? null : 12,
+                    child: CustomDirectionalityWidget(
+                      child: Text(
+                        PriceConverterHelper.convertPrice(
+                          startingPrice,
+                          discount: product.discount,
+                          discountType: product.discountType,
+                        ),
+                        style:
+                            rubikBold.copyWith(fontSize: Dimensions.fontSizeLarge),
+                      ),
+                    ),
+                  ),
+
+                  if (productProvider.checkStock(product) && isAvailable)
+                    Positioned(
+                      bottom: 0,
+                      right: isLtr ? 0 : null,
+                      left: isLtr ? null : 0,
+                      child: InkWell(
+                        onTap: () => ProductHelper.addToCart(
+                            cartIndex: cartIndex, product: product),
+                        child: Container(
+                          height: 32,
+                          width: 36,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.only(
+                              bottomRight: isLtr
+                                  ? const Radius.circular(12)
+                                  : Radius.zero,
+                              bottomLeft: isLtr
+                                  ? Radius.zero
+                                  : const Radius.circular(12),
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child:
+                              const Icon(Icons.add, color: Colors.white, size: 18),
                         ),
                       ),
                     ),
-
-                   if (productProvider.checkStock(product) && isAvailable)
-  Positioned(
-    bottom: 0,
-    right: isLtr ? 0 : null,
-    left: isLtr ? null : 0,
-    child: InkWell(
-      onTap: () => ProductHelper.addToCart(
-          cartIndex: cartIndex, product: product),
-      borderRadius: BorderRadius.only(
-        bottomRight: isLtr ? const Radius.circular(12) : Radius.zero,
-        bottomLeft: isLtr ? Radius.zero : const Radius.circular(12),
-      ),
-      child: Container(
-        height: 32,
-        width: 36,
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.only(
-            bottomRight: isLtr ? const Radius.circular(12) : Radius.zero,
-            bottomLeft: isLtr ? Radius.zero : const Radius.circular(12),
-          ),
-        ),
-        alignment: Alignment.center,
-        child: const Icon(Icons.add, color: Colors.white, size: 18),
-      ),
-    ),
-  ),
-
-                  ],
-                ),
+                ],
               ),
             ),
           ),
@@ -243,66 +258,87 @@ class _ProductDescriptionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCenterAlign = productGroup == ProductGroup.chefRecommendation ||
-        productGroup == ProductGroup.setMenu ||
-        productGroup == ProductGroup.branchProduct ||
-        (productGroup == ProductGroup.frequentlyBought &&
-            !ResponsiveHelper.isDesktop(context));
-
     final configModel =
         Provider.of<SplashProvider>(context, listen: false).configModel;
+
     final isHalalTagAvailable =
         (product.branchProduct?.halalStatus == 1) &&
             (configModel?.halalTagStatus == 1);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Directionality(
-        textDirection: isLtr ? TextDirection.ltr : TextDirection.rtl,
-        child: Column(
-          crossAxisAlignment: isCenterAlign
-              ? CrossAxisAlignment.center
-              : (isLtr ? CrossAxisAlignment.start : CrossAxisAlignment.end),
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: isCenterAlign
-                  ? MainAxisAlignment.center
-                  : (isLtr ? MainAxisAlignment.start : MainAxisAlignment.end),
-              children: [
-                Expanded(
-                  child: Text(
-                    product.name ?? '',
-                    softWrap: true,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: isCenterAlign
-                        ? TextAlign.center
-                        : (isLtr ? TextAlign.left : TextAlign.right),
-                    style:
-                        rubikSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge),
+      child: Column(
+        crossAxisAlignment:
+            isLtr ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  product.name ?? '',
+                  softWrap: true,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: isLtr ? TextAlign.left : TextAlign.right,
+                  style: rubikSemiBold.copyWith(
+                    fontSize: Dimensions.fontSizeLarge,
                   ),
                 ),
-                if (isHalalTagAvailable) const SizedBox(width: 6),
-                if (isHalalTagAvailable)
-                  CustomAssetImageWidget(
-                    Images.halalIconSvg,
-                    height: 18,
-                    width: 18,
-                    color: Theme.of(context).secondaryHeaderColor,
-                  ),
-              ],
+              ),
+              if (isHalalTagAvailable)
+                CustomAssetImageWidget(
+                  Images.halalIconSvg,
+                  height: 18,
+                  width: 18,
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+            ],
+          ),
+          const SizedBox(height: 6),
+
+          // ✅ Calories تظهر فقط في منتجات veg وتتحرك حسب اللغة
+          if (product.productType == 'veg')
+            Align(
+              alignment: isLtr ? Alignment.centerLeft : Alignment.centerRight,
+              child: RichText(
+                textAlign: isLtr ? TextAlign.left : TextAlign.right,
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '250 ',
+                      style: rubikRegular.copyWith(
+                        fontSize: Dimensions.fontSizeSmall + 2,
+                        color: Theme.of(context).secondaryHeaderColor,
+                      ),
+                    ),
+                    WidgetSpan(
+                      alignment: PlaceholderAlignment.middle,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+child: Text(
+  getTranslated('calories', context) ?? 'calories',
+  style: rubikRegular.copyWith(
+    fontSize: 8,
+    color: Colors.white,
+  ),
+),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 6),
-            product.rating!.isNotEmpty && product.rating![0].average! > 0.0
-                ? RatingBarWidget(
-                    rating: product.rating![0].average!,
-                    size: 16,
-                  )
-                : const SizedBox(),
-            const SizedBox(height: 8),
-          ],
-        ),
+
+          const SizedBox(height: 6),
+          if (product.rating!.isNotEmpty &&
+              product.rating![0].average! > 0.0)
+            RatingBarWidget(rating: product.rating![0].average!, size: 16.0),
+        ],
       ),
     );
   }
@@ -310,7 +346,6 @@ class _ProductDescriptionWidget extends StatelessWidget {
 
 class _DiscountTagWidget extends StatelessWidget {
   const _DiscountTagWidget({required this.product, required this.productGroup});
-
   final Product product;
   final ProductGroup productGroup;
 
@@ -326,8 +361,46 @@ class _DiscountTagWidget extends StatelessWidget {
         PriceConverterHelper.getDiscountType(
             discount: product.discount, discountType: product.discountType),
         style: rubikBold.copyWith(
-            color: Colors.white, fontSize: Dimensions.fontSizeSmall),
+          color: Colors.white,
+          fontSize: Dimensions.fontSizeSmall,
+        ),
       ),
     );
   }
+}
+
+// ✅ كليب يمين (للإنجليزي)
+class _TagRightClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final Path path = Path();
+    path.moveTo(0, 0);
+    path.lineTo(size.width - 8, 0);
+    path.lineTo(size.width, size.height / 2);
+    path.lineTo(size.width - 8, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+// ✅ كليب شمال (للعربي)
+class _TagLeftClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final Path path = Path();
+    path.moveTo(size.width, 0);
+    path.lineTo(8, 0);
+    path.lineTo(0, size.height / 2);
+    path.lineTo(8, size.height);
+    path.lineTo(size.width, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

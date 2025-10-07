@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restaurant/features/category/providers/category_provider.dart';
 import 'package:flutter_restaurant/helper/responsive_helper.dart';
+import 'package:flutter_restaurant/localization/language_constrants.dart';
 import 'package:flutter_restaurant/utill/dimensions.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
@@ -35,21 +36,23 @@ class _CategoryWebWidgetState extends State<CategoryWebWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // 👇 العناوين اللي اتضافت
-                    const Text(
-                      "Menu Categories",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                   Text(
+  getTranslated('menu_Categories', context)!,
+  style: const TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+  ),
+),
+
                     const SizedBox(height: 4),
-                    Text(
-                      "Select a category to explore",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
-                    ),
+                      Text(
+  getTranslated('Select a category to explore', context)!,
+  style: TextStyle(
+    fontSize: 16,
+    color: Colors.grey,
+  ),
+),
+
                     const SizedBox(height: 16),
 
                     // 👇 Styled ExpansionPanelList as dropdown-like card
@@ -120,12 +123,13 @@ class _CategoryWebWidgetState extends State<CategoryWebWidget> {
                                       ),
                                     ),
                                     subtitle: Text(
-                                      "${subCategories.length} subcategories",
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
+  "${subCategories.length} ${getTranslated('subcategories', context)!}",
+  style: TextStyle(
+    fontSize: 13,
+    color: Colors.grey[600],
+  ),
+),
+
                                   );
                                 },
                                 body: Column(

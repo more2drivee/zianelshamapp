@@ -58,13 +58,13 @@ class NewItemsWidget extends StatelessWidget {
                     isDesktop ? Dimensions.paddingSizeLarge : 10,
                     10,
                   ),
-                  child: Row(
+                  child: const Row(
                     children: [
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          /*Text(
                             getTranslated("our_new", context)!,
                             style: rubikBold.copyWith(
                               fontSize: 20,
@@ -76,7 +76,7 @@ class NewItemsWidget extends StatelessWidget {
                             width: 60,
                             height: 2,
                             color: Colors.red,
-                          ),
+                          ),*/
                         ],
                       )
                     ],
@@ -141,11 +141,11 @@ class NewItemsWidget extends StatelessWidget {
 
   Widget _buildBannerCard(BuildContext context, String imageUrl, {bool isDesktop = false, VoidCallback? onTap}) {
     return Container(
-      width: isDesktop ? 200 : 160,
+      width: isDesktop ? 400 : 300,
       height: isDesktop ? 200 : 160,
       margin: EdgeInsets.only(right: isDesktop ? 20 : 15),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.zero,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.15),
@@ -156,7 +156,7 @@ class NewItemsWidget extends StatelessWidget {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.zero,
+        borderRadius: BorderRadius.circular(16),
         child: Material(
           color: Colors.transparent,
           child: InkWell(

@@ -63,27 +63,24 @@ class _ChefsRecommendationWidgetState extends State<ChefsRecommendationWidget> {
                           ),
                         ),
                       ),
-                    if (isDesktop)
-                      Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              getTranslated('offers', context)!,
-                              style: rubikBold.copyWith(
-                                fontSize: Dimensions.fontSizeExtraLarge,
-                                color: themeProvider.darkTheme
-                                    ? Theme.of(context)
-                                        .colorScheme
-                                        .onSecondary
-                                    : ColorResources.homePageSectionTitleColor,
-                              ),
-                            ),
-                            const SizedBox(
-                                width: Dimensions.paddingSizeSmall),
-                          ],
-                        ),
-                      ),
+                   if (isDesktop)
+  Container(
+    width: Dimensions.webScreenWidth,
+    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+    alignment: Directionality.of(context) == TextDirection.rtl
+        ? Alignment.centerRight
+        : Alignment.centerLeft,
+    child: Text(
+      getTranslated('offers', context)!,
+      style: rubikBold.copyWith(
+        fontSize: Dimensions.fontSizeExtraLarge,
+        color: themeProvider.darkTheme
+            ? Theme.of(context).colorScheme.onSecondary
+            : ColorResources.homePageSectionTitleColor,
+      ),
+    ),
+  ),
+
                     if (isDesktop)
                       const SizedBox(height: Dimensions.paddingSizeDefault),
 
@@ -119,7 +116,7 @@ class _ChefsRecommendationWidgetState extends State<ChefsRecommendationWidget> {
                                     0,
                                 carouselController: sliderController,
                                 options: CarouselOptions(
-                                  height: 220, // ⬅️ تقليل ارتفاع الكارت
+                                  height: 250, // ⬅️ تقليل ارتفاع الكارت
                                   viewportFraction: isDesktop
                                       ? 0.16 // ⬅️ جعل الكارت أضيق على الديسكتوب
                                       : ResponsiveHelper.isTab(context)

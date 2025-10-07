@@ -1013,7 +1013,7 @@ class _VegTagView extends StatelessWidget {
               const SizedBox(width: Dimensions.paddingSizeExtraSmall),
 
               Text(
-                getTranslated(((product!.productType ?? '').toLowerCase() == 'veg') ? 'diet' : '${product!.productType}', context)!,
+                getTranslated(((product!.productType ?? '').toLowerCase() == 'veg') ? 'Diet' : '${product!.productType}', context)!,
                 style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
               ),
               const SizedBox(width: Dimensions.paddingSizeExtraSmall),

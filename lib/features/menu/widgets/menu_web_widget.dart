@@ -205,24 +205,30 @@ class MenuWebWidget extends StatelessWidget {
                         const ThemeSwitchButtonWidget(),
                         const SizedBox(width: Dimensions.paddingSizeExtraLarge),
 
-                        if(AppConstants.languages.length > 1) SizedBox(
-                          height: Dimensions.paddingSizeLarge,
-                          child: OnHoverWidget(
-                            builder: (isHovered) {
-                              final color = isHovered ? Theme.of(context).primaryColor : Theme.of(context).textTheme.titleLarge?.color;
-                              return MouseRegion(
-                                onHover: (details) {
-                                  _showLanguagePopup(details.position);
-                                },
-                                child: Row(children: [
-                                  Text('${currentLangCode}', style: Theme.of(context).textTheme.titleSmall?.copyWith(color: color)),
-                                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                                  Icon(Icons.expand_more, color: color, size: Dimensions.paddingSizeLarge),
-                                ]),
-                              );
-                            },
-                          ),
-                        ),
+                       if (AppConstants.languages.length > 1)
+  InkWell(
+    onTap: () async {
+      // ✅ يقلب اللغة عند الضغط
+      if (localizationProvider.locale.languageCode == 'ar') {
+        await localizationProvider.setLanguage(const Locale('en', 'US'));
+      } else {
+        await localizationProvider.setLanguage(const Locale('ar', 'EG'));
+      }
+    },
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
+      child: Text(
+        // ✅ لو اللغة الحالية إنجليزي → يعرض "عربي"
+        // ✅ لو اللغة الحالية عربي → يعرض "English"
+        localizationProvider.locale.languageCode == 'ar' ? 'English' : 'عربي',
+        style: Theme.of(context)
+            .textTheme
+            .titleSmall
+            ?.copyWith(color: Theme.of(context).primaryColor),
+      ),
+    ),
+  ),
+
 
                         if(isLoggedIn) ...[
                           const SizedBox(width: Dimensions.paddingSizeLarge),
@@ -266,15 +272,16 @@ class MenuWebWidget extends StatelessWidget {
           GridView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraLarge),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              crossAxisSpacing: Dimensions.paddingSizeExtraLarge,
-              mainAxisSpacing: Dimensions.paddingSizeExtraLarge,
+              crossAxisSpacing: Dimensions.paddingSizeLarge,
+              mainAxisSpacing: Dimensions.paddingSizeLarge,
             ),
             itemCount: menuList.length,
             itemBuilder: (context, index) => MenuItemWebWidget(menu: menuList[index]),
           ),
-          const SizedBox(height: 50),
+          SizedBox(height: Dimensions.paddingSizeExtraLarge * 2),
 
           /*Text('${getTranslated('version', context)} ${ AppConstants.appVersion}'),
           const SizedBox(height: 50),*/

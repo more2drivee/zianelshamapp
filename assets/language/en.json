@@ -339,7 +339,7 @@
   "review_submitted_successfully": "Review submitted successfully",
   "all": "All",
   "non_veg": "Non Veg",
-  "veg": "Veg",
+  "veg": "Diet",
   "show_less": "Show less",
   "show_more": "Show more",
   "dine_in": "Dine In",
@@ -829,5 +829,9 @@
   "get_rewarded_points": "Get rewarded for every order — start collecting points now!",
   "easy_payment_points": "Earn points and enjoy easy payments!",
   "our_new" : "Our New",
-  "offers" : "Offers"
+  "offers" : "Offers",
+  "menu_Categories":"Menu Categories",
+  "subcategories":"subcategories",
+  "Select a category to explore":"Select a category to explore",
+  "calories":"calories"
 }

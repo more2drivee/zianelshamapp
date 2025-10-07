@@ -304,7 +304,7 @@ List<PopupMenuEntry<Object>> popUpMenuList(BuildContext context) {
               child: Provider.of<SplashProvider>(context).baseUrls != null?  Consumer<SplashProvider>(
                 builder:(context, splash, child) => CustomImageWidget(
                   image: '${splash.baseUrls?.restaurantImageUrl}/${splash.configModel!.restaurantLogo}',
-                  placeholder: Images.webAppBarLogo,
+                  //placeholder: Images.webAppBarLogo,
                   fit: BoxFit.contain,
                   width: 120, height: 80,
                 )): const SizedBox(),

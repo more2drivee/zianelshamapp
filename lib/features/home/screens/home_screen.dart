@@ -307,47 +307,56 @@ class _HomeScreenState extends State<HomeScreen> {
                   elevation: 0,
                   backgroundColor: Theme.of(context).primaryColor,
                  bottom: PreferredSize(
-  preferredSize: const Size.fromHeight(25), // ⬅️ قللنا الارتفاع
+  preferredSize: const Size.fromHeight(25),
   child: Padding(
-    padding: const EdgeInsets.only(top: 4, bottom: 4), // ⬅️ رفعناها لفوق شويه
-    child: Consumer<LocationProvider>(
+    padding: const EdgeInsets.only(top: 4, bottom: 4),
+    child: Consumer<LocationProvider>( // ✅ بدون كلمة child:
       builder: (context, locationProvider, _) {
         return locationProvider.isLoading
             ? const SizedBox()
-            : Center( // ⬅️ توسيط العنصر داخل الأب بار
+            : Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  constraints: const BoxConstraints(maxWidth: 220), // ⬅️ قللنا العرض الأقصى
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  constraints:
+                      const BoxConstraints(maxWidth: 370), // ✅ العرض أوسع
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15), // خلفية خفيفة شفافة
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white, // ✅ خلفية بيضاء
+                    borderRadius: BorderRadius.zero,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: InkWell(
                     onTap: () => RouterHelper.getAddressRoute(),
                     child: Row(
-                      mainAxisSize: MainAxisSize.min, // ⬅️ العرض على قد المحتوى
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Icon(Icons.location_on,
-                            size: 14, color: Colors.white),
-                        const SizedBox(width: 4),
+                            size: 16, color: Colors.black87),
+                        const SizedBox(width: 6),
                         Flexible(
                           child: Text(
                             locationProvider.currentAddress?.address ??
                                 getTranslated('no_location_selected', context)!,
                             style: rubikRegular.copyWith(
-                              fontSize: 12, // ⬅️ تصغير النص
-                              color: Colors.white,
-                              height: 1.1,
+                              fontSize: 13,
+                              color: Colors.black87,
+                              height: 1.2,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        const SizedBox(width: 2),
+                        const SizedBox(width: 4),
                         const Icon(Icons.expand_more,
-                            size: 12, color: Colors.white),
+                            size: 16, color: Colors.black87),
                       ],
                     ),
                   ),
@@ -357,6 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
   ),
 ),
+
 
                 ),
 

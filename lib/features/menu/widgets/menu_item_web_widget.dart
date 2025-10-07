@@ -31,7 +31,7 @@ class MenuItemWebWidget extends StatelessWidget {
                     : isHoverActive ? Theme.of(context).primaryColor
                     : Theme.of(context).textTheme.bodyLarge!.color,
                   ),
-                const SizedBox(height: Dimensions.paddingSizeLarge),
+                const SizedBox(height: Dimensions.paddingSizeSmall),
 
                 Text(menu.title ?? '', textAlign: TextAlign.center, style: robotoRegular.copyWith(
                   color: isHoverActive ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyLarge!.color,

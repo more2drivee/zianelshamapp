@@ -129,21 +129,24 @@ class _BannerWidgetState extends State<BannerWidget> {
 
               // 🔹 المؤشرات (Dots)
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(filtered.length, (index) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                    width: _currentPage == index ? 12 : 8,
-                    height: _currentPage == index ? 12 : 8,
-                    decoration: BoxDecoration(
-                      color: _currentPage == index
-                          ? Theme.of(context).primaryColor
-                          : Colors.grey,
-                      shape: BoxShape.circle,
-                    ),
-                  );
-                }),
-              ),
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: List.generate(filtered.length, (index) {
+    final bool isActive = _currentPage == index;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      width: isActive ? 20 : 8, // الشرطة أطول
+      height: 6, // ارتفاع صغير للشرطة
+      decoration: BoxDecoration(
+        color: isActive
+            ? Theme.of(context).primaryColor
+            : Colors.grey.shade400,
+        borderRadius: BorderRadius.circular(12), // تخليها شبه الشرطة الناعمة
+      ),
+    );
+  }),
+),
+
             ],
           );
         },
