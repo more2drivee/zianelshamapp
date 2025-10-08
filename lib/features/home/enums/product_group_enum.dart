@@ -5,5 +5,5 @@ enum ProductGroup {
   chefRecommendation,
   searchResult,
   frequentlyBought,
-  branchProduct,
+  branchProduct, popular,
 }

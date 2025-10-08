@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_restaurant/localization/language_constrants.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_restaurant/features/category/providers/category_provider.dart';
 import 'package:flutter_restaurant/features/home/providers/sorting_provider.dart';
@@ -11,6 +12,8 @@ import 'package:flutter_restaurant/helper/responsive_helper.dart';
 import 'package:flutter_restaurant/utill/dimensions.dart';
 import 'package:flutter_restaurant/utill/styles.dart';
 import 'package:flutter_restaurant/common/widgets/paginated_list_widget.dart';
+import 'package:flutter_restaurant/common/providers/theme_provider.dart';
+import 'package:flutter_restaurant/utill/color_resources.dart';
 import '../../category/domain/category_model.dart';
 
 class MobileHomeScreen extends StatelessWidget {
@@ -20,6 +23,7 @@ class MobileHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDesktop = ResponsiveHelper.isDesktop(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Padding(
       padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
@@ -40,8 +44,9 @@ class MobileHomeScreen extends StatelessWidget {
               );
 
               final categoryName = (categoryProvider.isCategorySelected)
-                  ? (selectedCategory.name ?? "All Products")
-                  : "All Products";
+                  ? (selectedCategory.name ??
+                      getTranslated('all_products', context))
+                  : getTranslated('all_products', context);
 
               final parents = categoryList
                   .where((c) => (c.parentId?.toString() ?? '0') == '0')
@@ -51,10 +56,12 @@ class MobileHomeScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      categoryName,
-                      style: rubikSemiBold.copyWith(
-                        fontSize: 18,
-                        color: Theme.of(context).primaryColor,
+                      categoryName!,
+                      style: rubikBold.copyWith(
+                        fontSize: Dimensions.fontSizeExtraLarge,
+                        color: themeProvider.darkTheme
+                            ? Theme.of(context).colorScheme.onSecondary
+                            : ColorResources.homePageSectionTitleColor,
                       ),
                     ),
                   ),
@@ -95,9 +102,11 @@ class MobileHomeScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    Text("All Categories",
-                                        style: rubikSemiBold.copyWith(
-                                            fontSize: 16)),
+                                    Text(
+                                      getTranslated('all_categories', context)!,
+                                      style:
+                                          rubikSemiBold.copyWith(fontSize: 16),
+                                    ),
                                     const SizedBox(height: 8),
                                     ExpansionPanelList.radio(
                                       elevation: 0,
@@ -124,7 +133,10 @@ class MobileHomeScreen extends StatelessWidget {
                                                       .getCategoryProductList(
                                                           parentId, 1);
                                                 },
-                                                child: const Text("View All"),
+                                                child: Text(
+                                                  getTranslated(
+                                                      'view_all', context)!,
+                                                ),
                                               ),
                                             );
                                           },
@@ -188,10 +200,10 @@ class MobileHomeScreen extends StatelessWidget {
 
           const SizedBox(height: Dimensions.paddingSizeLarge),
 
-          /// ✅ Products
+          /// ✅ Products Grid
           Consumer3<CategoryProvider, ProductProvider, ProductSortProvider>(
-            builder:
-                (context, categoryProvider, productProvider, sortingProvider, _) {
+            builder: (context, categoryProvider, productProvider,
+                sortingProvider, _) {
               final isCategorySelected = categoryProvider.isCategorySelected;
 
               final products = isCategorySelected
@@ -274,7 +286,6 @@ class MobileHomeScreen extends StatelessWidget {
                           );
                         },
                       ),
-
                       if (isDesktop)
                         Padding(
                           padding: const EdgeInsets.all(

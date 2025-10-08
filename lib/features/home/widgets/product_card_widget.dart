@@ -105,31 +105,33 @@ class ProductCardWidget extends StatelessWidget {
                           StockTagWidget(
                               product: product, productGroup: productGroup),
 
-                          // ✅ شارة VEG تتبدل حسب اللغة
+                          
                           if (product.productType == 'veg')
-                            Positioned(
-                              top: (imageHeight / 5) - 12,
-                              left: isLtr ? 0 : null,
-                              right: isLtr ? null : 0,
-                              child: ClipPath(
-                                clipper: isLtr
-                                    ? _TagRightClipper()
-                                    : _TagLeftClipper(),
-                                child: Container(
-                                  height: 24,
-                                  color: Colors.green,
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                                  child: Text(
-                                    getTranslated('veg', context)!,
-                                    style: rubikMedium.copyWith(
-                                      fontSize: 10,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                           Positioned(
+  top: 0, // عند حافة الكارت
+  left: isLtr ? 0 : null,
+  right: isLtr ? null : 0,
+  child: Container(
+    height: 32,
+    width: 36,
+    decoration: BoxDecoration(
+color: Colors.green,
+      borderRadius: BorderRadius.only(
+        topLeft: isLtr ? const Radius.circular(12) : Radius.zero,
+        topRight: isLtr ? Radius.zero : const Radius.circular(12),
+      ),
+    ),
+    alignment: Alignment.center,
+    child: Text(
+      getTranslated('veg', context) ?? 'VEG',
+      style: rubikMedium.copyWith(
+        fontSize: 10,
+        color: Colors.white,
+      ),
+    ),
+  ),
+),
+
 
                           if (product.discount != null && product.discount != 0)
                             Positioned(

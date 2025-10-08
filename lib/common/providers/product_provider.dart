@@ -30,7 +30,7 @@ class ProductProvider extends DataSyncProvider {
   List<int?> _addOnQtyList = [];
   int popularOffset = 1;
   final int _cartIndex = -1;
-  final List<String> _productTypeList = ['all', 'non_veg', 'veg'];
+  final List<String> _productTypeList = ['all', 'veg'];
   List<List<bool?>> _selectedVariations = [];
   bool _variationSeeMoreButtonStatus = false;
   List<bool>? _isRequiredSelected;

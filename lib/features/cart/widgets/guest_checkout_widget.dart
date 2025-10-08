@@ -71,7 +71,7 @@ class GuestCheckoutWidget extends StatelessWidget {
           const Expanded(child: Divider()),
           const SizedBox(width: Dimensions.paddingSizeSmall),
 
-          Text(getTranslated('or_continue_as_a', context)!, style: rubikRegular.copyWith(
+          /*Text(getTranslated('or_continue_as_a', context)!, style: rubikRegular.copyWith(
             color: Theme.of(context).hintColor, fontSize: Dimensions.fontSizeSmall,
           )),
           const SizedBox(width: Dimensions.paddingSizeExtraSmall),
@@ -82,7 +82,7 @@ class GuestCheckoutWidget extends StatelessWidget {
               fontSize: Dimensions.fontSizeSmall,
               color: isHovered ? Theme.of(context).primaryColor : null,
             ),
-          ))),
+          ))),*/
 
           const SizedBox(width: Dimensions.paddingSizeSmall),
           const Expanded(child: Divider()),

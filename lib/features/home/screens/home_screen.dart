@@ -319,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   constraints:
-                      const BoxConstraints(maxWidth: 370), // ✅ العرض أوسع
+                      const BoxConstraints(maxWidth: 360), // ✅ العرض أوسع
                   decoration: BoxDecoration(
                     color: Colors.white, // ✅ خلفية بيضاء
                     borderRadius: BorderRadius.zero,

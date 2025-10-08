@@ -252,7 +252,12 @@ class RouterHelper {
   static String _navigateRoute( String path,{ RouteAction? route = RouteAction.push}) {
 
     if(route == RouteAction.pushNamedAndRemoveUntil){
-      Get.context?.go(path);
+Future.delayed(Duration.zero, () {
+  if (Get.context != null && path != null && path.isNotEmpty) {
+    Get.context?.go(path);
+  }
+});
+
 
       if(kIsWeb) {
         historyUrlStrategy.replaceState(null, '', '/');

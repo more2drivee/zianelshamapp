@@ -159,14 +159,17 @@ class _CategoryScreenState extends State<CategoryScreen> with TickerProviderStat
                   ),
                 ),
 
-                SliverToBoxAdapter(child: FilterButtonWidget(
-                  type: _type,
-                  items: productProvider.productTypeList,
-                  onSelected: (selected) {
-                    _type = selected;
-                    category.getCategoryProductList(category.selectedSubCategoryId, 1,  type: _type);
-                  },
-                )),
+               SliverToBoxAdapter(
+  child: FilterButtonWidget(
+    type: _type,
+    items: ['all', 'veg'],    
+    onSelected: (selected) {
+      _type = selected;
+      category.getCategoryProductList(category.selectedSubCategoryId, 1, type: _type);
+    },
+  ),
+),
+
 
                 SliverPadding(
                   padding: ResponsiveHelper.isDesktop(context) ? EdgeInsets.symmetric(

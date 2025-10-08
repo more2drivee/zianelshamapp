@@ -1,3 +1,5 @@
+// android/app/build.gradle
+
 buildscript {
     ext.kotlin_version = '1.9.0'
 
@@ -8,7 +10,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:8.3.0'
-        classpath 'com.google.gms:google-services:4.4.1'
+        classpath 'com.google.gms:google-services:4.4.2'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -18,8 +20,8 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id "com.google.firebase.crashlytics"
     id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
 }
 
 def localProperties = new Properties()
@@ -30,15 +32,8 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '1'
+def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
 
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
@@ -47,26 +42,27 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.zainelsham.app"   // ✅ غيرنا الـ namespace
+    namespace "com.zainelsham.app"
     compileSdk 35
 
     compileOptions {
         coreLibraryDesugaringEnabled true
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     defaultConfig {
-        applicationId "com.zainelsham.app"   // ✅ غيرنا الـ package name
+        applicationId "com.zainelsham.app"
         minSdkVersion 23
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
         }
@@ -83,8 +79,14 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug // 👈 لو عندك keystore استخدم signingConfigs.release
+            // 👇 استخدم keystore الحقيقي لو عندك، غير كده خليه debug مؤقتًا
+            signingConfig signingConfigs.debug
             crunchPngs false
+            minifyEnabled false
+            shrinkResources false
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
 }
@@ -96,11 +98,15 @@ flutter {
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 
-    // Firebase BOM (يدير الإصدارات تلقائياً)
-    implementation platform('com.google.firebase:firebase-bom:32.8.0')
+    // ✅ Firebase BOM (يدير الإصدارات تلقائيًا)
+    implementation platform('com.google.firebase:firebase-bom:33.3.0')
 
-    // Firebase libraries
+    // ✅ مكتبات Firebase المطلوبة
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.firebase:firebase-analytics'
 }
+
+
+apply plugin: 'com.google.gms.google-services' // ✅ لازم يكون آخر سطر

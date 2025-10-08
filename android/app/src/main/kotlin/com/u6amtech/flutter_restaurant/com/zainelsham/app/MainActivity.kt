@@ -1,4 +1,4 @@
-package com.sixamtech.efood
+package com.zainelsham.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -834,6 +834,8 @@
   "menu_Categories":"الفئات",
   "subcategories":"الفئات الفرعيه",
   "Select a category to explore":"حدد الفئة",
-  "calories":"سعرات حراريه"
+  "calories":"سعرات حراريه",
+  "all_products":"جميع المنتجات",
+  "show_branch" :"الفروع"
 
 }
